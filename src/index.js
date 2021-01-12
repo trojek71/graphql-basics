@@ -1,5 +1,5 @@
 import { GraphQLServer } from 'graphql-yoga'
-//import { removeAllListeners } from 'nodemon'
+import { v4 as uuid } from 'uuid'
 
 const users = [{
     id: '1',
@@ -11,7 +11,7 @@ const users = [{
     email: 'marcin@email.com',
     age: 22
 },{
-    id: 3,
+    id: '3',
     name: 'Kasia',
     email: 'kasia@email.com'
 }]
@@ -21,7 +21,8 @@ const posts =[{
     title: 'GraphQL 101',
     body: 'asdas asdasdas asdasdasd',
     published: true,
-    author: '1'
+    author: '1',
+    
 },{
     id: '11',
     title: 'Advance GrapqQL',
@@ -38,17 +39,25 @@ const posts =[{
 
 const comments = [{
     id: '102',
-    text: 'qweqweqwe, qweqweqwe,qweqweqwe'
+    text: 'qweqweqwe, qweqweqwe,qweqweqwe',
+    author: '1',
+    post: '10'
     
 },{
     id: '103',
-    text: 'asdasd asdasdasdaasdasd'
+    text: 'asdasd asdasdasdaasdasd',
+    author: '1',
+    post: '10'
 },{
     id: '104',
-    text: 'zxczx zxczxczxcx'
+    text: 'zxczx zxczxczxcx',
+    author: '2',
+    post: '11' 
 },{
     id: '105',
-    text: 'tyutyio tyiutyityityi'
+    text: 'tyutyio tyiutyityityi',
+    author: '3',
+    post: '11'
 }
 ]
 
@@ -62,12 +71,17 @@ const typeDefs = `
       
     }
 
+    type Mutation {
+        createUser(name: String!, email: String!, age: Int): User!
+    }
+
     type User {
         id: ID!
         name : String!
         email: String!
         age: Int
         posts: [Post!]!
+        comments: [Comment!]!
     }
 
     type Post {
@@ -76,11 +90,14 @@ const typeDefs = `
         body: String!
         published: Boolean!
         author: User!
+        comments: [Comment!]!
     }
 
     type Comment {
         id: ID!
         text: String!
+        author: User!
+        post :Post!
     }
 `
 const resolvers = {
@@ -114,10 +131,45 @@ const resolvers = {
             }
         },      
     },
+
+    Mutation:{
+        createUser(parent, args, ctx, info){
+            const emailTaken = users.some((user) => user.email === args.email)
+           if (emailTaken) {
+               throw new Error('Email taken')
+           }
+            const user ={
+                id: uuid(),
+                name: args.name,
+                email: args.email,
+                age: args.age
+            }
+            users.push(user)
+            
+            return user
+        }
+    },
     Post: {
-        author(parent,args,ctx,ingo){
+        author(parent, args, ctx, info){
             return users.find((user)=>{
                 return user.id === parent.author
+            })
+        },
+        comments(parent, args, ctx, info) {
+            return comments.filter((comment) => {
+                return comment.post === parent.id
+            })
+        }
+    },
+    Comment :{
+        author(parent, args, ctx, info){
+            return users.find((user) => {
+                return user.id === parent.author
+            })
+        },
+        post(parent, args, ctx, info){
+            return posts.find((post) => {
+                return post.id === parent.post
             })
         }
     },
@@ -125,6 +177,11 @@ const resolvers = {
         posts(parent, args, ctx, info){
             return posts.filter((post) =>{
                 return post.author === parent.id
+            })
+        },
+        comments(parent, args, ctx, info) {
+            return comments.filter((comment) => {
+                return comment.author === parent.id
             })
         }
     }
