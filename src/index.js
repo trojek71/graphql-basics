@@ -1,7 +1,7 @@
 import { GraphQLServer } from 'graphql-yoga'
 import { v4 as uuid } from 'uuid'
 
-const users = [{
+let users = [{
     id: '1',
     name: 'Tomek',
     email: 'tomek@email.com'
@@ -16,7 +16,7 @@ const users = [{
     email: 'kasia@email.com'
 }]
 
-const posts =[{
+let posts =[{
     id: '10',
     title: 'GraphQL 101',
     body: 'asdas asdasdas asdasdasd',
@@ -37,7 +37,7 @@ const posts =[{
     author: '2'
 }]
 
-const comments = [{
+let comments = [{
     id: '102',
     text: 'qweqweqwe, qweqweqwe,qweqweqwe',
     author: '1',
@@ -73,6 +73,7 @@ const typeDefs = `
 
     type Mutation {
         createUser(data: CreateUserInput!): User!
+        deleteUser(id: ID!): User!
         createPost(data: CreatePostInput!):Post!
         createComment( data: CreateCommentInput!): Comment!
     }
@@ -166,6 +167,29 @@ const resolvers = {
             users.push(user)
             
             return user
+        },
+        deleteUser(parent, args, ctx, info){
+            const userIndex = users.findIndex((user) => user.id = args.id)
+                if(userIndex === -1){
+                    throw new Error ('User not found')
+                }
+                    const deletedUsers = users.splice(userIndex, 1)
+                        posts = posts.filter((post) => {
+                            const match = post.author === args.id
+                            
+                            if (match) {
+                                
+                                comments = comments.filter((comment) => comments.post !== post.id )
+                            }
+                                return !match
+                        })
+                        
+                            comments = comments.filter((comment) => comment.author !== args.id)
+
+
+
+                    return deletedUsers[0]
+
         },
         createPost(parent, args, ctx, info){
             const userExist = users.some((user) => user.id === args.data.author)
