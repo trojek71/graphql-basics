@@ -58,7 +58,13 @@ let comments = [{
     text: 'tyutyio tyiutyityityi',
     author: '3',
     post: '11'
+},{
+    id: '106',
+    text: 'nie usuniety',
+    author: '2',
+    post: '12'
 }
+
 ]
 
 const typeDefs = `
@@ -179,7 +185,7 @@ const resolvers = {
                             
                             if (match) {
                                 
-                                comments = comments.filter((comment) => comments.post !== post.id )
+                                comments = comments.filter((comment) => comment.post !== post.id )
                             }
                                 return !match
                         })
