@@ -37,7 +37,7 @@
 
     type User {
         id: ID!
-        name : String!
+        name: String!
         email: String!
         age: Int
         posts: [Post!]!
@@ -57,5 +57,5 @@
         id: ID!
         text: String!
         author: User!
-        post :Post!
+        post: Post!
     }
