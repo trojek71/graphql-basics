@@ -37,7 +37,7 @@ const posts =[{
 const comments = [{
     id: '102',
     text: 'qweqweqwe, qweqweqwe,qweqweqwe',
-    author: '1',
+    author: '3',
     post: '10'
     
 },{
@@ -53,8 +53,8 @@ const comments = [{
 },{
     id: '105',
     text: 'tyutyio tyiutyityityi',
-    author: '3',
-    post: '11'
+    author: '1',
+    post: '12'
 },{
     id: '106',
     text: 'nie usuniety',
